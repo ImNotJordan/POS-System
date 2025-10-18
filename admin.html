@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - POS System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>POS Admin Dashboard</h1>
+            <nav>
+                <a href="index.html" class="nav-link">Back to POS</a>
+            </nav>
+        </header>
+
+        <div class="admin-content">
+            <div class="admin-sidebar">
+                <button class="tab-btn active" data-tab="products">Products</button>
+                <button class="tab-btn" data-tab="sales">Sales</button>
+                <button class="tab-btn" data-tab="inventory">Inventory</button>
+            </div>
+
+            <div class="admin-main">
+                <!-- Products Tab -->
+                <div id="products-tab" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Product Management</h2>
+                            <button id="add-product-btn" class="btn primary">
+                                <span class="material-icons">add</span> Add Product
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table id="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Category</th>
+                                        <th>Barcode</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Tab -->
+                <div id="sales-tab" class="tab-content">
+                    <div class="card">
+                        <h2>Sales Report</h2>
+                        <div class="date-range-picker">
+                            <input type="date" id="start-date">
+                            <span>to</span>
+                            <input type="date" id="end-date">
+                            <button id="generate-report" class="btn primary">Generate Report</button>
+                        </div>
+                        <div class="sales-stats">
+                            <div class="stat-card">
+                                <h3>Total Sales</h3>
+                                <p id="total-sales">$0.00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Orders</h3>
+                                <p id="total-orders">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Avg. Order Value</h3>
+                                <p id="avg-order">$0.00</p>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="sales-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Tab -->
+                <div id="inventory-tab" class="tab-content">
+                    <div class="card">
+                        <h2>Inventory Management</h2>
+                        <div class="inventory-filters">
+                            <select id="inventory-category">
+                                <option value="all">All Categories</option>
+                                <option value="food">Food</option>
+                                <option value="drinks">Drinks</option>
+                                <option value="snacks">Snacks</option>
+                            </select>
+                            <input type="text" id="inventory-search" placeholder="Search products...">
+                        </div>
+                        <div class="table-container">
+                            <table id="inventory-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-table-body">
+                                    <!-- Inventory items will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Product</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-price">Price ($)</label>
+                            <input type="number" id="product-price" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-category">Category</label>
+                            <select id="product-category" required>
+                                <option value="food">Food</option>
+                                <option value="drinks">Drinks</option>
+                                <option value="snacks">Snacks</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-barcode">Barcode</label>
+                            <input type="text" id="product-barcode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-emoji">Emoji</label>
+                            <input type="text" id="product-emoji" placeholder="e.g., 🍔" maxlength="2">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn secondary" id="cancel-product">Cancel</button>
+                        <button type="submit" class="btn primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
