@@ -139,6 +139,19 @@ function openProductModal(product = null) {
     const productBarcodeInput = document.getElementById('product-barcode');
     const productEmojiInput = document.getElementById('product-emoji');
     
+    // Function to generate a random 4-digit barcode that doesn't exist yet
+    const generateUniqueBarcode = () => {
+        let barcode;
+        const existingBarcodes = products.map(p => p.barcode);
+        
+        do {
+            // Generate a random 4-digit number
+            barcode = Math.floor(1000 + Math.random() * 9000).toString();
+        } while (existingBarcodes.includes(barcode));
+        
+        return barcode;
+    };
+    
     if (product) {
         // Edit mode
         modalTitle.textContent = 'Edit Product';
@@ -149,10 +162,11 @@ function openProductModal(product = null) {
         productBarcodeInput.value = product.barcode;
         productEmojiInput.value = product.emoji || '';
     } else {
-        // Add mode
+        // Add mode - generate a new barcode
         modalTitle.textContent = 'Add New Product';
         productForm.reset();
         productIdInput.value = '';
+        productBarcodeInput.value = generateUniqueBarcode();
     }
     
     productModal.classList.add('active');
@@ -167,11 +181,21 @@ function handleProductSubmit(e) {
     e.preventDefault();
     
     const productId = document.getElementById('product-id').value;
+    let barcode = document.getElementById('product-barcode').value.trim();
+    
+    // Generate a random 4-digit barcode if not provided
+    if (!barcode) {
+        const existingBarcodes = products.map(p => p.barcode);
+        do {
+            barcode = Math.floor(1000 + Math.random() * 9000).toString();
+        } while (existingBarcodes.includes(barcode));
+    }
+    
     const productData = {
         name: document.getElementById('product-name').value,
         price: parseFloat(document.getElementById('product-price').value),
         category: document.getElementById('product-category').value,
-        barcode: document.getElementById('product-barcode').value,
+        barcode: barcode,
         emoji: document.getElementById('product-emoji').value || null,
         stock: 0 // Default stock for new products
     };

@@ -441,4 +441,60 @@ function handleBarcodeInput(e) {
     e.target.value = '';
 }
 
+function setupUsbScanner() {
+    // This function will handle USB barcode scanner input
+    // USB barcode scanners typically act like keyboards and send keypress events
+    // followed by an Enter key at the end of the scan
+    
+    let barcode = '';
+    let lastKeyTime = Date.now();
+    const barcodeInput = document.getElementById('barcode-input');
+    
+    // Only try to focus if there's a barcode input element and it's not already focused
+    const tryFocusInput = () => {
+        if (barcodeInput && document.activeElement !== barcodeInput) {
+            try {
+                barcodeInput.focus({ preventScroll: true });
+            } catch (e) {
+                console.log('Could not focus barcode input:', e);
+            }
+        }
+    };
+    
+    // Try to focus the input when the page loads
+    if (barcodeInput) {
+        // Use setTimeout to avoid blocking the main thread
+        setTimeout(tryFocusInput, 100);
+        
+        // Also try to focus when the window regains focus
+        window.addEventListener('focus', tryFocusInput);
+    }
+    
+    // Listen for keydown events on the document
+    document.addEventListener('keydown', function(e) {
+        const currentTime = Date.now();
+        
+        // If more than 100ms have passed since the last key, reset the barcode
+        if (currentTime - lastKeyTime > 100) {
+            barcode = '';
+        }
+        lastKeyTime = currentTime;
+        
+        // If it's the Enter key, process the barcode
+        if (e.key === 'Enter' && barcode.length > 0) {
+            e.preventDefault();
+            processBarcode(barcode);
+            barcode = '';
+            // Try to refocus the input after processing
+            if (barcodeInput) {
+                setTimeout(tryFocusInput, 0);
+            }
+        } 
+        // If it's a regular character, add it to the barcode
+        else if (e.key.length === 1) {
+            barcode += e.key;
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', init);
