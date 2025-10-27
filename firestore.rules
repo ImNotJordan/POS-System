@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin';
+    }
+    
+    // Users collection - users can read their own document, admins can read all
+    match /users/{userId} {
+      // Allow authenticated users to read any user document (needed for role checking)
+      allow read: if isAuthenticated();
+      
+      // Only allow users to write their own document, or admins to write any
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+    }
+    
+    // Inventory collection
+    match /inventory/{itemId} {
+      // All authenticated users can read inventory
+      allow read: if isAuthenticated();
+      
+      // Only admins can create, update, or delete inventory items
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Orders collection (if you add it in the future)
+    match /orders/{orderId} {
+      // All authenticated users can read orders
+      allow read: if isAuthenticated();
+      
+      // All authenticated users can create orders
+      allow create: if isAuthenticated();
+      
+      // Only admins can update or delete orders
+      allow update, delete: if isAdmin();
+    }
+  }
+}
